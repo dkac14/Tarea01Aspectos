@@ -1,16 +1,32 @@
-package observer;
+package aspects;
 
+import observer.ColorChangeNotifier;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 
-public class ColorChangeNotifier {
-	private Color color;
+public aspect ColorChangeAspect {
 
-	//setter
-    public void setColor(Color color) {
-        this.color = color;
+    private int contador = 0;
+    
+    //after(Color c) se ejecuta después de la ejecución de setColor(Color).
+    
+    after(Color c): call(void observer.ColorChangeNotifier.setColor(Color)) && args(c) {
+        contador++;
+        System.out.println(">> Color de fondo cambiado a: " + colorToString(c));
+        
+        //panel de notifición de los primeros 5 cambios de color
+        if (contador == 5) {
+            JOptionPane.showMessageDialog(null,
+                "Has cambiado el color 5 veces.",
+                "Notificación",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
     }
-    //getter
-    public Color getColor() {
-        return color;
+
+    private String colorToString(Color c) {
+        if (Color.CYAN.equals(c)) return "Cyan";
+        if (Color.pink.equals(c)) return "Rosado";
+        if (Color.YELLOW.equals(c)) return "Amarillo";
+        return "Desconocido";
     }
 }
